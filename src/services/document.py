@@ -20,7 +20,7 @@ class DocumentService:
         self.embedding_service = EmbeddingService()
         self.milvus_service = MilvusService()
         
-    async def process_document(self, documents: List[str]):
+    async def process_document(self, documents: List[Document]):
         results = []
         
         for document in documents:

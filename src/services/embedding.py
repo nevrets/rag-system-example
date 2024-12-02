@@ -3,10 +3,12 @@ from typing import List
 
 import torch
 
+from utils.config import CFG
+
 
 class EmbeddingService:
     def __init__(self):
-        self.model = SentenceTransformer("BAAI/bge-m3")
+        self.model = SentenceTransformer(CFG.embedding_model)
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model.to(self.device)
     

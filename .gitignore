@@ -5,3 +5,4 @@ intend_example
 .vscode
 outputs
 config.py
+*.pyc

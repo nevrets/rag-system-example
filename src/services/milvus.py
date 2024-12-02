@@ -1,13 +1,15 @@
 from pymilvus import Collection, MilvusClient, FieldSchema, DataType, CollectionSchema, connections, db
 from typing import List, Dict
 
+from utils.config import CFG
+
 
 class MilvusService:
     def __init__(self):
-        self.client = MilvusClient(uri="http://172.7.0.45:31530")
-        self.collection_name = "rag"
-        self.dimension = 1024           # bge-m3 embedding dimension
-        self.database = "rag_db"        # milvus database alias
+        self.client = MilvusClient(uri=CFG.milvus_uri)
+        self.collection_name = CFG.milvus_collection
+        self.dimension = CFG.milvus_dimension
+        self.database = CFG.milvus_db
         self.connect()
         self.init_collection()
         
@@ -22,8 +24,8 @@ class MilvusService:
         
         # 새로운 연결 생성
         connections.connect(
-            host="172.7.0.45",
-            port="31530",
+            host=CFG.milvus_uri,
+            port=CFG.milvus_port,
             db_name=self.database
         )
         
@@ -44,7 +46,7 @@ class MilvusService:
             
             index_params = {
                 "index_type": "IVF_FLAT",
-                "params": {"nlist": 1024},
+                "params": {"nlist": CFG.milvus_dimension},
                 "metric_type": "COSINE"
             }
             

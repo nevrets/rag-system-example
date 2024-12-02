@@ -2,19 +2,23 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from pymilvus import connections
 from services.document import DocumentService, Document, DocumentBatch
+from utils.config import CFG
 
 app = FastAPI()
 document_service = DocumentService()
 
 
 # @app.on_event("startup")    # 서버 시작 시 실행되는 함수
-# async def startup():
-#     # Milvus 연결 설정
-#     connections.connect(
-#         alias="rag",
-#         host="172.7.0.45",
-#         port="31530"
-#     )
+async def startup():
+    # Milvus 연결 설정
+    connections.connect(
+        alias=CFG.milvus_db,
+        host=CFG.milvus_uri,
+        port=CFG.milvus_port
+    )
+
+    return {"status": "healthy"}
+
 
 @app.post("/documents/batch")
 async def insert_documents(document_batch: DocumentBatch):

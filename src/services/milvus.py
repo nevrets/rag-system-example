@@ -12,7 +12,9 @@ class MilvusService:
         self.database = CFG.milvus_db
         self.connect()
         self.init_collection()
-        
+
+
+    # ---- Milvus 연결 ---- #
     def connect(self):
         # 기존 연결 해제
         try:
@@ -24,14 +26,15 @@ class MilvusService:
         
         # 새로운 연결 생성
         connections.connect(
-            host=CFG.milvus_uri,
+            host=CFG.milvus_host,
             port=CFG.milvus_port,
             db_name=self.database
         )
         
         print(f"Connected to Milvus server with database alias: {self.database}")
-        
-        
+
+
+    # ---- Milvus Collection 초기화 ---- #
     def init_collection(self):
         if not self.client.has_collection(self.collection_name):
             fields = [
@@ -57,9 +60,12 @@ class MilvusService:
         
         else:
             self.collection = Collection(name=self.collection_name)
-        
 
-    async def insert_document(self, documents: List[Dict]):
+
+    # ---- Milvus 삽입 ---- #
+    async def insert_document(self, 
+                              documents: List[Dict]
+                              ):
         try:
             entities = [
                 [document["id"] for document in documents],
@@ -73,3 +79,33 @@ class MilvusService:
         
         except Exception as e:
             raise Exception(f"Error inserting document into Milvus: {e}")
+
+
+    # ---- Milvus 검색 ---- #
+    async def search_documents(self, 
+                               query_embedding: List[float], 
+                               limit: int = 5
+                               ):
+        try:
+            search_params = {
+                "metric_type": "COSINE",
+                "params": {"nprobe": 10},
+            }
+            
+            results = self.collection.search(
+                data=[query_embedding],
+                anns_field="embedding",
+                param=search_params,
+                limit=limit,
+                output_fields=["id", "text", "metadata"]
+            )
+            
+            return [{
+                "id": hit.id,
+                "text": hit.text,
+                "metadata": hit.metadata,
+                "score": hit.score
+            } for hit in results[0]]
+            
+        except Exception as e:
+            raise Exception(f"Error searching documents in Milvus: {e}")

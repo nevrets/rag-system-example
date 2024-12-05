@@ -29,10 +29,10 @@ metadata:
   name: fastapi-service
   namespace: rag
 spec:
-  type: NodePort  # 타입을 NodePort로 변경
+  type: NodePort
   selector:
     app: fastapi-app
   ports:
   - port: 8000
     targetPort: 8000
-    nodePort: 31500  # 노드포트 번호 추가 (30000-32767 범위 내에서 선택)
+    nodePort: 31500

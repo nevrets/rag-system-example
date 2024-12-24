@@ -5,7 +5,8 @@ intend_example
 outputs
 config.py
 *.pyc
-base
+base/
+logs/
 .vscode/*
 
 # Python

@@ -1,6 +1,6 @@
-from pymilvus import Collection, MilvusClient, FieldSchema, DataType, CollectionSchema, connections, db
+from pymilvus import Collection, MilvusClient, FieldSchema, DataType, CollectionSchema, connections
 from typing import List, Dict
-
+from loguru import logger
 from utils.config import CFG
 
 
@@ -37,6 +37,9 @@ class MilvusService:
     # ---- Milvus Collection 초기화 ---- #
     def init_collection(self):
         if not self.client.has_collection(self.collection_name):
+            logger.info(f"Creating collection: {self.collection_name}")
+            
+            # schema 정의
             fields = [
                 FieldSchema(name="id", dtype=DataType.VARCHAR, max_length=100, is_primary=True),
                 FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=65535),
@@ -44,15 +47,18 @@ class MilvusService:
                 FieldSchema(name="metadata", dtype=DataType.JSON)
             ]
             
+            # schema 생성
             schema = CollectionSchema(fields=fields, description="RAG collection")
             self.collection = Collection(name=self.collection_name, schema=schema)
             
+            # index 생성
             index_params = {
                 "index_type": "IVF_FLAT",
                 "params": {"nlist": CFG.milvus_dimension},
                 "metric_type": "COSINE"
             }
             
+            # index 생성
             self.collection.create_index(
                 field_name="embedding",
                 index_params=index_params
@@ -63,7 +69,7 @@ class MilvusService:
 
 
     # ---- Milvus 삽입 ---- #
-    async def insert_document(self, 
+    async def insert_document(self,
                               documents: List[Dict]
                               ):
         try:
@@ -109,3 +115,46 @@ class MilvusService:
             
         except Exception as e:
             raise Exception(f"Error searching documents in Milvus: {e}")
+        
+        
+    # ---- Milvus 삭제 ---- #
+    async def delete_documents(self, 
+                               doc_ids: List[str]
+                               ) -> bool:
+        try:
+            expr = f'id in ["{"","".join(doc_ids)}"]'
+            logger.info(f"Deleting documents with expression: {expr}")
+            self.collection.delete(expr)
+            logger.info(f"Deleted documents with IDs: {doc_ids}")
+            return True
+        
+        except Exception as e:
+            raise Exception(f"Error deleting documents in Milvus: {e}")
+        
+    
+    # ---- Milvus 업데이트 (삭제 후 재삽입) ---- #
+    async def update_document(self, 
+                              doc_id: str, 
+                              text: str, 
+                              embedding: List[float], 
+                              metadata: dict = None
+                              ) -> bool:
+        try:
+            # 기존 문서 삭제
+            await self.delete_documents([doc_id])
+
+            # 새 문서 삽입
+            document = {
+                "id": doc_id,
+                "text": text,
+                "embedding": embedding,
+                "metadata": metadata or {}
+            }
+            
+            await self.insert_document([document])
+            logger.info(f"문서 ID {doc_id} 업데이트 완료")
+            return True
+        
+        except Exception as e:
+            logger.error(f"문서 업데이트 중 오류 발생: {e}")
+            raise e

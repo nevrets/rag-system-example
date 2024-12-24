@@ -1,9 +1,7 @@
+import torch
 from sentence_transformers import SentenceTransformer
 from typing import List
 from loguru import logger
-
-import torch
-
 from utils.config import CFG
 
 
@@ -25,3 +23,8 @@ class EmbeddingService:
         except Exception as e:
             raise e
         
+
+
+if __name__ == "__main__":
+    embedding_service = EmbeddingService()
+    print(embedding_service.embed_document("안녕하세요, 반갑습니다."))

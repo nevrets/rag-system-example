@@ -1,7 +1,6 @@
 import uuid
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from services.llm_service import VLLMService
 from typing import List, Optional
 from services.embedding import EmbeddingService
 from services.milvus import MilvusService
@@ -24,7 +23,7 @@ class DocumentBatch(BaseModel):
 class DocumentService:
     def __init__(self):
         self.id = str(uuid.uuid4())
-        self.llm_service = VLLMService()
+        # self.llm_service = VLLMService()
         self.embedding_service = EmbeddingService()
         self.milvus_service = MilvusService()
         self.text_splitter = RecursiveCharacterTextSplitter(

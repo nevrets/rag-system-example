@@ -3,7 +3,7 @@ from services.milvus import MilvusService
 from loguru import logger
 from utils.config import CFG
 
-logger.add("logs/test_insert.log", rotation="100KB")
+logger.add("src/test/logs/test_insert.log", rotation="100KB")
 
 
 async def test_milvus_crud():

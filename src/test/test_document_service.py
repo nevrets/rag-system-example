@@ -3,7 +3,7 @@ from services.document import DocumentService
 from services.embedding import EmbeddingService
 from loguru import logger
 
-logger.add("logs/document_crud.log", rotation="100KB")
+logger.add("src/test/logs/document_crud.log", rotation="100KB")
 
 
 async def test_document_crud():
@@ -25,13 +25,11 @@ async def test_document_crud():
         # 문서 업데이트
         logger.info("문서 업데이트 테스트")
         updated_text = "이것은 업데이트된 테스트 문서입니다."
-        embedding = await embedding_service.embed_document(updated_text)
 
         await document_service.update_document(
             doc_id=test_doc['id'],
-            text=updated_text,
-            embedding=embedding,
-            metadata={"source": "test", "type": "updated"}
+            new_text=updated_text,
+            new_metadata={"source": "test", "type": "updated"}
         )
         
         # 문서 검색으로 업데이트 확인

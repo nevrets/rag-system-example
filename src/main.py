@@ -4,12 +4,17 @@ from pymilvus import connections
 from services.document import DocumentService, Document, DocumentBatch
 from utils.config import CFG
 from typing import List
+from chains.rag_chain import RAGChain
+from services.llm_service import VLLMService
 
 import warnings
 warnings.filterwarnings("ignore")
 
+
 app = FastAPI()
 document_service = DocumentService()
+llm_service = VLLMService()
+rag_chain = RAGChain()
 
 
 @app.on_event("startup")
@@ -88,6 +93,38 @@ async def update_document(doc_id: str,
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ---- 텍스트 생성 ---- #
+@app.post("/llm/generate")
+async def generate_text(prompt: str):
+    try:
+        response = await llm_service._call(prompt)
+        return {"status": "success", "results": response}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ---- 텍스트 배치 생성 ---- #
+@app.post("/llm/generate_batch")
+async def generate_batch(prompts: List[str]):
+    try:
+        response = await llm_service.agenerate(prompts)
+        return {"status": "success", "results": response}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ---- RAG 체인 쿼리 ---- #
+@app.post("/rag/query")
+async def rag_query(question: str, max_docs: int = 3):
+    try:
+        response = await rag_chain.query(question, max_docs)
+        return {"status": "success", "results": response}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: fastapi-app
-        image: harbor.euso.kr/rag/fastapi:latest
+        image: harbor.euso.kr/rag/rag-example:latest
         ports:
         - containerPort: 8000
 

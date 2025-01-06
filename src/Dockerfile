@@ -1,4 +1,4 @@
-FROM harbor.euso.kr/rag/fastapi:base
+FROM harbor.euso.kr/rag/rag-example:base
 
 WORKDIR /app
 COPY . /app
@@ -9,6 +9,6 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 
 
-## docker build --no-cache -t harbor.euso.kr/rag/fastapi:latest .
-## docker push harbor.euso.kr/rag/fastapi:latest
+## docker build --no-cache -t harbor.euso.kr/rag/rag-example:latest .
+## docker push harbor.euso.kr/rag/rag-example:latest
 

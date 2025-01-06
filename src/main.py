@@ -5,7 +5,7 @@ from services.document import DocumentService, Document, DocumentBatch
 from utils.config import CFG
 from typing import List
 from chains.rag_chain import RAGChain
-from services.llm_service import VLLMService
+from services.vllm import VLLMService
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -128,5 +128,6 @@ async def rag_query(question: str, max_docs: int = 3):
 
 
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8088)

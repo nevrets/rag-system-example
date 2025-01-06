@@ -1,6 +1,6 @@
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from services.llm_service import VLLMService
+from services.vllm import VLLMService
 from services.document import DocumentService
 from typing import Dict, Any, List
 from loguru import logger

@@ -17,9 +17,8 @@ class ModelError(Exception):
     pass
 
 
+# ---- vLLM 서비스 ---- #
 class VLLMService(LLM, BaseModel):
-    """LangChain과 호환되는 vLLM 서비스"""
-    
     _instance = None
     _is_initialized = False
     

@@ -22,30 +22,30 @@ async def load_wiki_data():
     total_documents = 0
     
     for query in search_queries:
-        try:
-            articles = await wiki_loader.load(
-                query=query,
-                language="ko",
-                load_max_docs=10    # 각 주제별 최대 문서 수
-            )
+        # try:
+        articles = await wiki_loader.load(
+            query=query,
+            language="ko",
+            load_max_docs=10    # 각 주제별 최대 문서 수
+        )
+        
+        # Document 객체로 변환
+        documents = [
+            Document(
+                text=article["text"],
+                metadata=article["metadata"]
+            ) for article in articles
+        ]
+        
+        # 배치 처리로 Milvus에 저장
+        results = await document_service.process_document(documents)
+        total_documents += len(results)
+        
+        logger.info(f"Inserted {len(results)} documents for query: {query}")
             
-            # Document 객체로 변환
-            documents = [
-                Document(
-                    text=article["text"],
-                    metadata=article["metadata"]
-                ) for article in articles
-            ]
-            
-            # 배치 처리로 Milvus에 저장
-            results = await document_service.process_document(documents)
-            total_documents += len(results)
-            
-            logger.info(f"Inserted {len(results)} documents for query: {query}")
-            
-        except Exception as e:
-            logger.error(f"Error processing query '{query}': {e}")
-            continue
+        # except Exception as e:
+        #     logger.error(f"Error processing query '{query}': {e}")
+        #     continue
         
     logger.info(f"Total documents inserted: {total_documents}")
     

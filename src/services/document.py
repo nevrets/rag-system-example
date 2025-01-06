@@ -40,17 +40,17 @@ class DocumentService:
         results = []
         
         for document in documents:
-            if not document['id']:
-                document['id'] = str(uuid.uuid4())
+            if not document.id:
+                document.id = str(uuid.uuid4())
                 
             # document embedding
-            embedding = await self.embedding_service.embed_document(document['text'])
+            embedding = await self.embedding_service.embed_document(document.text)
             
             entity = {
-                "id": document['id'],  
-                "text": document['text'],
+                "id": document.id,  
+                "text": document.text,
                 "embedding": embedding,
-                "metadata": document['metadata']
+                "metadata": document.metadata
             }
 
             results.append(entity)

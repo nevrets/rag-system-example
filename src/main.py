@@ -6,10 +6,16 @@ from utils.config import CFG
 from typing import List
 from chains.rag_chain import RAGChain
 from services.vllm import VLLMService
+from loguru import logger
+import torch
 
 import warnings
 warnings.filterwarnings("ignore")
 
+logger.info("Starting FastAPI server")
+logger.info(f"GPU Status: {torch.cuda.is_available()}")
+if torch.cuda.is_available():
+    logger.info(f"Used GPU Number: {torch.cuda.current_device()}")
 
 app = FastAPI()
 document_service = DocumentService()
